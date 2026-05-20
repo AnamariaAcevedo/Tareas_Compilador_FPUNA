@@ -24,8 +24,7 @@ public class AnalizadorSintactico {
             System.out.println(">>> RESULTADO: El archivo fuente es SINTÁCTICAMENTE CORRECTO. <<<");
             return true;
         } else {
-            System.out.println(">>> RESULTADO: Se encontraron " + contadorErrores
-                    + " error(es) sintáctico(s). <<<");
+            System.out.println(">>> RESULTADO: Se encontraron " + contadorErrores + " error(es) sintáctico(s). <<<");
             return false;
         }
     }
@@ -45,10 +44,8 @@ public class AnalizadorSintactico {
         } else if (tokenActual.tipo == TipoToken.L_CORCHETE) {
             analizarArray();
         } else {
-            reportarError("Se esperaba '{' o '[' para iniciar un elemento, "
-                    + "pero se encontró '" + tokenActual.lexema + "'.");
-            panicMode(TipoToken.R_LLAVE, TipoToken.R_CORCHETE,
-                      TipoToken.COMA, TipoToken.EOF);
+            reportarError("Se esperaba '{' o '[' para iniciar un elemento, " + "pero se encontró '" + tokenActual.lexema + "'.");
+            panicMode(TipoToken.R_LLAVE, TipoToken.R_CORCHETE, TipoToken.COMA, TipoToken.EOF);
         }
     }
 
@@ -61,16 +58,12 @@ public class AnalizadorSintactico {
         } else if (tokenActual.tipo == TipoToken.LITERAL_CADENA) {
             analizarListaAtributos();
 
-            if (!consumirConPanic(TipoToken.R_LLAVE,
-                    "Se esperaba '}' para cerrar el objeto",
-                    TipoToken.R_LLAVE, TipoToken.R_CORCHETE,
-                    TipoToken.COMA, TipoToken.EOF)) {
+            if (!consumirConPanic(TipoToken.R_LLAVE, "Se esperaba '}' para cerrar el objeto", TipoToken.R_LLAVE, TipoToken.R_CORCHETE, TipoToken.COMA, TipoToken.EOF)) {
                 if (tokenActual.tipo == TipoToken.R_LLAVE) consumir(TipoToken.R_LLAVE);
             }
 
         } else if (tokenActual.tipo != TipoToken.EOF) {
-            reportarError("Se esperaba un atributo (cadena) o '}' dentro del objeto, "
-                    + "pero se encontró '" + tokenActual.lexema + "'.");
+            reportarError("Se esperaba un atributo (cadena) o '}' dentro del objeto, " + "pero se encontró '" + tokenActual.lexema + "'.");
             panicMode(TipoToken.R_LLAVE, TipoToken.EOF);
             if (tokenActual.tipo == TipoToken.R_LLAVE) consumir(TipoToken.R_LLAVE);
         }
@@ -82,20 +75,15 @@ public class AnalizadorSintactico {
         if (tokenActual.tipo == TipoToken.R_CORCHETE) {
             consumir(TipoToken.R_CORCHETE);
 
-        } else if (tokenActual.tipo == TipoToken.L_LLAVE
-                || tokenActual.tipo == TipoToken.L_CORCHETE) {
+        } else if (tokenActual.tipo == TipoToken.L_LLAVE || tokenActual.tipo == TipoToken.L_CORCHETE) {
             analizarListaElementos();
 
-            if (!consumirConPanic(TipoToken.R_CORCHETE,
-                    "Se esperaba ']' para cerrar el array",
-                    TipoToken.R_CORCHETE, TipoToken.R_LLAVE,
-                    TipoToken.COMA, TipoToken.EOF)) {
+            if (!consumirConPanic(TipoToken.R_CORCHETE, "Se esperaba ']' para cerrar el array", TipoToken.R_CORCHETE, TipoToken.R_LLAVE, TipoToken.COMA, TipoToken.EOF)) {
                 if (tokenActual.tipo == TipoToken.R_CORCHETE) consumir(TipoToken.R_CORCHETE);
             }
 
         } else if (tokenActual.tipo != TipoToken.EOF) {
-            reportarError("Se esperaba un elemento ('{' o '[') o ']' dentro del array, "
-                    + "pero se encontró '" + tokenActual.lexema + "'.");
+            reportarError("Se esperaba un elemento ('{' o '[') o ']' dentro del array, " + "pero se encontró '" + tokenActual.lexema + "'.");
             panicMode(TipoToken.R_CORCHETE, TipoToken.EOF);
             if (tokenActual.tipo == TipoToken.R_CORCHETE) consumir(TipoToken.R_CORCHETE);
         }
@@ -107,12 +95,10 @@ public class AnalizadorSintactico {
         while (tokenActual.tipo == TipoToken.COMA) {
             consumir(TipoToken.COMA); 
 
-            if (tokenActual.tipo == TipoToken.L_LLAVE
-                    || tokenActual.tipo == TipoToken.L_CORCHETE) {
+            if (tokenActual.tipo == TipoToken.L_LLAVE || tokenActual.tipo == TipoToken.L_CORCHETE) {
                 analizarElemento();
             } else {
-                reportarError("Se esperaba un elemento ('{' o '[') después de ',', "
-                        + "pero se encontró '" + tokenActual.lexema + "'.");
+                reportarError("Se esperaba un elemento ('{' o '[') después de ',', " + "pero se encontró '" + tokenActual.lexema + "'.");
                 panicMode(TipoToken.R_CORCHETE, TipoToken.R_LLAVE, TipoToken.EOF);
                 break;
             }
@@ -127,10 +113,8 @@ public class AnalizadorSintactico {
 
             if (tokenActual.tipo == TipoToken.LITERAL_CADENA) {
                 analizarAtributo();
-            } else if (tokenActual.tipo != TipoToken.R_LLAVE
-                    && tokenActual.tipo != TipoToken.EOF) {
-                reportarError("Se esperaba el nombre de un atributo (cadena) después de ',', "
-                        + "pero se encontró '" + tokenActual.lexema + "'.");
+            } else if (tokenActual.tipo != TipoToken.R_LLAVE && tokenActual.tipo != TipoToken.EOF) {
+                reportarError("Se esperaba el nombre de un atributo (cadena) después de ',', " + "pero se encontró '" + tokenActual.lexema + "'.");
                 panicMode(TipoToken.LITERAL_CADENA, TipoToken.R_LLAVE, TipoToken.EOF);
                 if (tokenActual.tipo == TipoToken.LITERAL_CADENA) {
                     analizarAtributo();
@@ -151,18 +135,15 @@ public class AnalizadorSintactico {
             consumir(TipoToken.DOS_PUNTOS);
             analizarValorAtributo();
         } else {
-            reportarError("Se esperaba ':' después del nombre del atributo '"
-                    + tokenActual.lexema + "'.");
+            reportarError("Se esperaba ':' después del nombre del atributo '" + tokenActual.lexema + "'.");
             panicMode(TipoToken.COMA, TipoToken.R_LLAVE, TipoToken.EOF);
         }
     }
 
     private void analizarNombreAtributo() {
         if (tokenActual.tipo != TipoToken.LITERAL_CADENA) {
-            reportarError("Se esperaba un nombre de atributo (cadena), "
-                    + "pero se encontró '" + tokenActual.lexema + "'.");
-            panicMode(TipoToken.DOS_PUNTOS, TipoToken.COMA,
-                      TipoToken.R_LLAVE, TipoToken.EOF);
+            reportarError("Se esperaba un nombre de atributo (cadena), " + "pero se encontró '" + tokenActual.lexema + "'.");
+            panicMode(TipoToken.DOS_PUNTOS, TipoToken.COMA, TipoToken.R_LLAVE, TipoToken.EOF);
         } else {
             consumir(TipoToken.LITERAL_CADENA);
         }
@@ -190,11 +171,8 @@ public class AnalizadorSintactico {
                 consumir(TipoToken.PR_NULL);
                 break;
             default:
-                reportarError("Valor de atributo inválido: '"
-                        + tokenActual.lexema + "'. "
-                        + "Se esperaba un objeto, array, cadena, número, true, false o null.");
-                panicMode(TipoToken.COMA, TipoToken.R_LLAVE,
-                          TipoToken.R_CORCHETE, TipoToken.EOF);
+                reportarError("Valor de atributo inválido: '" + tokenActual.lexema + "'. " + "Se esperaba un objeto, array, cadena, número, true, false o null.");
+                panicMode(TipoToken.COMA, TipoToken.R_LLAVE, TipoToken.R_CORCHETE, TipoToken.EOF);
                 break;
         }
     }
@@ -203,8 +181,7 @@ public class AnalizadorSintactico {
         if (tokenActual.tipo == esperado) {
             tokenActual = lexico.siguienteToken();
         } else {
-            reportarError("Se esperaba '" + descripcionToken(esperado)
-                    + "' pero se encontró '" + tokenActual.lexema + "'.");
+            reportarError("Se esperaba '" + descripcionToken(esperado) + "' pero se encontró '" + tokenActual.lexema + "'.");
         }
     }
 
@@ -213,22 +190,18 @@ public class AnalizadorSintactico {
             tokenActual = lexico.siguienteToken();
             return true;
         }
-        reportarError(mensajeError + ", pero se encontró '"
-                + tokenActual.lexema + "'.");
+        reportarError(mensajeError + ", pero se encontró '" + tokenActual.lexema + "'.");
         panicMode(sincronizacion);
         return false;
     }
 
     private void panicMode(TipoToken... sincronizacion) {
-        System.out.println("    [Panic Mode] Sincronizando a partir de línea "
-                + tokenActual.linea + "...");
+        System.out.println("    [Panic Mode] Sincronizando a partir de línea " + tokenActual.linea + "...");
 
         while (tokenActual.tipo != TipoToken.EOF) {
             for (TipoToken tipo : sincronizacion) {
                 if (tokenActual.tipo == tipo) {
-                    System.out.println("    [Panic Mode] Sincronizado en '"
-                            + tokenActual.lexema + "' (línea "
-                            + tokenActual.linea + ").");
+                    System.out.println("    [Panic Mode] Sincronizado en '" + tokenActual.lexema + "' (línea " + tokenActual.linea + ").");
                     return;
                 }
             }
@@ -239,8 +212,7 @@ public class AnalizadorSintactico {
 
     private void reportarError(String mensaje) {
         contadorErrores++;
-        String error = String.format("ERROR SINTÁCTICO [Línea %d]: %s",
-                tokenActual.linea, mensaje);
+        String error = String.format("ERROR SINTÁCTICO [Línea %d]: %s", tokenActual.linea, mensaje);
         errores.add(error);
         System.out.println(error);
     }
