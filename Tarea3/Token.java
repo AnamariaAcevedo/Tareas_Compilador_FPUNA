@@ -1,18 +1,16 @@
 public class Token {
-    public final TokenType type;
-    public final String lexeme;
-    public final int line;
-    public final int col;
+    public final TipoToken tipo;
+    public final String    lexema;
+    public final int       linea;
 
-    public Token(TokenType type, String lexeme, int line, int col) {
-        this.type = type;
-        this.lexeme = lexeme;
-        this.line = line;
-        this.col = col;
+    public Token(TipoToken tipo, String lexema, int linea) {
+        this.tipo   = tipo;
+        this.lexema = lexema;
+        this.linea  = linea;
     }
 
     @Override
     public String toString() {
-        return String.format("Token(%s, '%s', L%d:C%d)", type, lexeme, line, col);
+        return String.format("Token(%-18s | lexema='%s' | linea=%d)", tipo, lexema, linea);
     }
 }

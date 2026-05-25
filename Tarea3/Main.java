@@ -1,76 +1,51 @@
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.util.List;
 
 public class Main {
+    public static void main(String[] args) {
+        String rutaFuente  = "fuente.txt";
+        String rutaSalida  = "salida.xml";
+        String contenido;
 
-    public static void main(String[] args) throws IOException {
-        Path projectDir = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
-
-        String inputPath = projectDir.resolve("fuente.txt").toString();
-
-        String outputPath = projectDir.resolve("fuente.xml").toString();
-
-        String source;
         try {
-            source = new String(Files.readAllBytes(Paths.get(inputPath)), StandardCharsets.UTF_8);
+            BufferedReader lector = new BufferedReader(new InputStreamReader(new FileInputStream(rutaFuente), StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            String linea;
+            while ((linea = lector.readLine()) != null) {
+                sb.append(linea).append("\n");
+            }
+            lector.close();
+            contenido = sb.toString();
         } catch (IOException e) {
-            System.err.println("No se pudo leer fuente.txt");
-            System.err.println("Asegurate de que exista en: " + projectDir);
+            System.err.println("Error al leer '" + rutaFuente + "': " + e.getMessage());
             System.exit(1);
             return;
         }
 
-        System.out.println("=== Traduciendo fuente.txt ===\n");
+        System.out.println("Archivo fuente: " + rutaFuente);
+        System.out.println();
 
-        Lexer lexer = new Lexer(source);
-        List<Token> tokens = lexer.tokenize();
+        AnalizadorLexico lexico     = new AnalizadorLexico(contenido);
+        AnalizadorSintactico analizador = new AnalizadorSintactico(lexico);
 
-        if (!lexer.getErrors().isEmpty()) {
-            System.err.println("--- Errores Léxicos ---");
-            for (String e : lexer.getErrors()) {
-                System.err.println("  " + e);
-            }
-            System.err.println();
-        }
+        String xml = analizador.analizar();
 
-        Parser parser = new Parser(tokens);
-        parser.parse();
-
-        if (!parser.getErrors().isEmpty()) {
-            System.err.println("--- Errores Sintácticos ---");
-            for (String e : parser.getErrors()) {
-                System.err.println("  " + e);
-            }
-            System.err.println();
-        }
-
-        boolean hasErrors = !lexer.getErrors().isEmpty() || !parser.getErrors().isEmpty();
-
-        String xmlContent = parser.getXml();
-
-        if (xmlContent != null && !xmlContent.isEmpty()) {
+        if (!analizador.hayErrores() && xml != null && !xml.isEmpty()) {
             try (PrintWriter pw = new PrintWriter(
                     new OutputStreamWriter(
-                            new FileOutputStream(outputPath),
-                            StandardCharsets.UTF_8))) {
-
-                pw.print(xmlContent);
+                        new FileOutputStream(rutaSalida), StandardCharsets.UTF_8))) {
+                pw.print(xml);
+                pw.println();              
+            } catch (IOException e) {
+                System.err.println("Error al escribir '" + rutaSalida + "': " + e.getMessage());
+                System.exit(2);
             }
-
-            if (hasErrors) {
-                System.out.println("Traducción parcial generada: fuente.xml");
-            } else {
-                System.out.println("Traducción exitosa -> fuente.xml");
-                System.out.println("\n--- XML generado ---");
-                System.out.println(xmlContent);
-            }
-
-        } else {
-            System.err.println("✗ No se pudo generar XML debido a errores graves.");
+            System.out.println("\nArchivo XML generado: " + rutaSalida);
+            System.out.println("\n" + xml);
+        } else if (analizador.hayErrores()) {
+            System.err.println("\nNo se generó XML debido a errores sintácticos.");
         }
 
-        System.exit(hasErrors ? 1 : 0);
+        System.exit(analizador.hayErrores() ? 1 : 0);
     }
 }
